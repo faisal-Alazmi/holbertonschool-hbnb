@@ -1,5 +1,6 @@
 from flask_restx import Namespace, Resource, fields
 from app.services import facade
+from app.api.v1.reviews import serialize_review
 
 api = Namespace("places", description="Place operations")
 
@@ -13,7 +14,6 @@ place_input = api.model("PlaceInput", {
     "amenities": fields.List(fields.String)
 })
 
-
 def serialize_place(place):
     owner = facade.get_user(place.owner_id)
     amenities = [
@@ -22,10 +22,18 @@ def serialize_place(place):
         if facade.get_amenity(a_id)
     ]
 
-    return place.to_dict(
-        owner=owner.to_dict() if owner else None,
-        amenities=amenities
-    )
+    reviews = [
+        serialize_review(r)
+        for r in facade.get_reviews_by_place(place.id)
+    ]
+
+    return {
+        **place.to_dict(
+            owner=owner.to_dict() if owner else None,
+            amenities=amenities
+        ),
+        "reviews": reviews
+    }
 
 
 @api.route("/")
