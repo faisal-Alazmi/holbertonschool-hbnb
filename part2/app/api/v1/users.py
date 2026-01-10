@@ -38,3 +38,42 @@ class UserList(Resource):
             api.abort(400, f"Missing required field(s): {', '.join(missing)}")
 
         # Create user
+        try:
+            user = facade.create_user(data)
+        except Exception as e:
+            api.abort(500, f"Failed to create user: {str(e)}")
+
+        return user.to_dict(), 201
+
+    @api.marshal_list_with(user_model)
+    def get(self):
+        """
+        Retrieve all users
+        """
+        users = facade.get_all_users()
+        return [user.to_dict() for user in users]
+
+
+@api.route("/<string:user_id>")
+class UserResource(Resource):
+    @api.marshal_with(user_model)
+    def get(self, user_id):
+        """
+        Retrieve user by ID
+        """
+        user = facade.get_user(user_id)
+        if not user:
+            api.abort(404, "User not found")
+        return user.to_dict()
+
+    @api.expect(user_input, validate=False)
+    @api.marshal_with(user_model)
+    def put(self, user_id):
+        """
+        Update user information
+        """
+        data = api.payload
+        user = facade.update_user(user_id, data)
+        if not user:
+            api.abort(404, "User not found")
+        return user.to_dict()
