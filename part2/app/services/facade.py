@@ -1,10 +1,14 @@
 from app.persistence.repository import InMemoryRepository
 from app.models.user import User
+from app.models.amenity import Amenity
+from app.models.place import Place
 
 
 class HBnBFacade:
     def __init__(self):
         self.user_repo = InMemoryRepository()
+        self.amenity_repo = InMemoryRepository()
+        self.place_repo = InMemoryRepository()
 
     def create_user(self, data):
         user = User(
@@ -26,6 +30,60 @@ class HBnBFacade:
         user = self.get_user(user_id)
         if not user:
             return None
-
         user.update(data)
         return user
+
+    def create_amenity(self, data):
+        amenity = Amenity(name=data.get("name"))
+        self.amenity_repo.add(amenity)
+        return amenity
+
+    def get_amenity(self, amenity_id):
+        return self.amenity_repo.get(amenity_id)
+
+    def get_all_amenities(self):
+        return self.amenity_repo.get_all()
+
+    def update_amenity(self, amenity_id, data):
+        amenity = self.get_amenity(amenity_id)
+        if not amenity:
+            return None
+        amenity.update(data)
+        return amenity
+
+    def create_place(self, data):
+        owner = self.user_repo.get(data.get("owner_id"))
+        if not owner:
+            raise ValueError("Owner not found")
+
+        amenities = []
+        for amenity_id in data.get("amenities", []):
+            amenity = self.amenity_repo.get(amenity_id)
+            if amenity:
+                amenities.append(amenity.id)
+
+        place = Place(
+            title=data.get("title"),
+            description=data.get("description"),
+            price=data.get("price"),
+            latitude=data.get("latitude"),
+            longitude=data.get("longitude"),
+            owner_id=owner.id,
+            amenities=amenities
+        )
+
+        self.place_repo.add(place)
+        return place
+
+    def get_place(self, place_id):
+        return self.place_repo.get(place_id)
+
+    def get_all_places(self):
+        return self.place_repo.get_all()
+
+    def update_place(self, place_id, data):
+        place = self.get_place(place_id)
+        if not place:
+            return None
+        place.update(data)
+        return place
