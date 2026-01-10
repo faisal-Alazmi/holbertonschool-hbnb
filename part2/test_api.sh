@@ -44,20 +44,26 @@ echo ""
 # -----------------------------
 echo "Testing Places endpoints..."
 
-# 1. Create valid place
+# 1. Create valid place (FIXED: uses correct fields)
 echo -n "POST /places/ (valid): "
 PLACE_RESPONSE=$(curl -s -w "%{http_code}" -o /tmp/place.json -X POST $BASE_URL/places/ \
 -H "Content-Type: application/json" \
--d "{\"name\":\"Cozy Cottage\",\"owner_id\":\"$USER_ID\"}")
+-d "{\"title\":\"Cozy Cottage\",\"description\":\"A nice place\",\"price\":100.0,\"latitude\":40.7128,\"longitude\":-74.0060,\"owner_id\":\"$USER_ID\",\"amenities\":[]}")
 PLACE_STATUS=${PLACE_RESPONSE:(-3)}
-if [ "$PLACE_STATUS" == "201" ]; then echo "✅ $PLACE_STATUS"; else echo "❌ $PLACE_STATUS"; fi
-PLACE_ID=$(jq -r '.id' /tmp/place.json)
+if [ "$PLACE_STATUS" == "201" ]; then 
+    echo "✅ $PLACE_STATUS"
+    PLACE_ID=$(jq -r '.id' /tmp/place.json)
+else 
+    echo "❌ $PLACE_STATUS"
+    cat /tmp/place.json
+    PLACE_ID=""
+fi
 
 # 2. Invalid owner
 echo -n "POST /places/ (invalid owner): "
 PLACE_INVALID=$(curl -s -o /dev/null -w "%{http_code}" -X POST $BASE_URL/places/ \
 -H "Content-Type: application/json" \
--d '{"name":"Mansion","owner_id":"fake-id"}')
+-d '{"title":"Mansion","description":"Big house","price":500.0,"latitude":40.7128,"longitude":-74.0060,"owner_id":"fake-id","amenities":[]}')
 if [ "$PLACE_INVALID" == "400" ]; then echo "✅ $PLACE_INVALID"; else echo "❌ $PLACE_INVALID"; fi
 
 # 3. Get all places
@@ -65,10 +71,14 @@ echo -n "GET /places/: "
 ALL_PLACES=$(curl -s -o /dev/null -w "%{http_code}" $BASE_URL/places/)
 if [ "$ALL_PLACES" == "200" ]; then echo "✅ $ALL_PLACES"; else echo "❌ $ALL_PLACES"; fi
 
-# 4. Get single place
-echo -n "GET /places/<id>: "
-SINGLE_PLACE=$(curl -s -o /dev/null -w "%{http_code}" $BASE_URL/places/$PLACE_ID)
-if [ "$SINGLE_PLACE" == "200" ]; then echo "✅ $SINGLE_PLACE"; else echo "❌ $SINGLE_PLACE"; fi
+# 4. Get single place (FIXED: only test if PLACE_ID exists)
+if [ -n "$PLACE_ID" ]; then
+    echo -n "GET /places/<id>: "
+    SINGLE_PLACE=$(curl -s -o /dev/null -w "%{http_code}" $BASE_URL/places/$PLACE_ID)
+    if [ "$SINGLE_PLACE" == "200" ]; then echo "✅ $SINGLE_PLACE"; else echo "❌ $SINGLE_PLACE"; fi
+else
+    echo "GET /places/<id>: ⏭️  SKIPPED (no place created)"
+fi
 
 echo ""
 # -----------------------------
@@ -76,31 +86,46 @@ echo ""
 # -----------------------------
 echo "Testing Reviews endpoints..."
 
-# 1. Create valid review
-echo -n "POST /reviews/ (valid): "
-REVIEW_RESPONSE=$(curl -s -w "%{http_code}" -o /tmp/review.json -X POST $BASE_URL/reviews/ \
--H "Content-Type: application/json" \
--d "{\"text\":\"Great place!\",\"user_id\":\"$USER_ID\",\"place_id\":\"$PLACE_ID\"}")
-REVIEW_STATUS=${REVIEW_RESPONSE:(-3)}
-if [ "$REVIEW_STATUS" == "201" ]; then echo "✅ $REVIEW_STATUS"; else echo "❌ $REVIEW_STATUS"; fi
-REVIEW_ID=$(jq -r '.id' /tmp/review.json)
+# Only test reviews if we have a valid place
+if [ -n "$PLACE_ID" ]; then
+    # 1. Create valid review
+    echo -n "POST /reviews/ (valid): "
+    REVIEW_RESPONSE=$(curl -s -w "%{http_code}" -o /tmp/review.json -X POST $BASE_URL/reviews/ \
+    -H "Content-Type: application/json" \
+    -d "{\"text\":\"Great place!\",\"user_id\":\"$USER_ID\",\"place_id\":\"$PLACE_ID\"}")
+    REVIEW_STATUS=${REVIEW_RESPONSE:(-3)}
+    if [ "$REVIEW_STATUS" == "201" ]; then 
+        echo "✅ $REVIEW_STATUS"
+        REVIEW_ID=$(jq -r '.id' /tmp/review.json)
+    else 
+        echo "❌ $REVIEW_STATUS"
+        cat /tmp/review.json
+        REVIEW_ID=""
+    fi
 
-# 2. Missing user_id
-echo -n "POST /reviews/ (missing user_id): "
-REVIEW_INVALID=$(curl -s -o /dev/null -w "%{http_code}" -X POST $BASE_URL/reviews/ \
--H "Content-Type: application/json" \
--d "{\"text\":\"Nice\",\"place_id\":\"$PLACE_ID\"}")
-if [ "$REVIEW_INVALID" == "400" ]; then echo "✅ $REVIEW_INVALID"; else echo "❌ $REVIEW_INVALID"; fi
+    # 2. Missing user_id
+    echo -n "POST /reviews/ (missing user_id): "
+    REVIEW_INVALID=$(curl -s -o /dev/null -w "%{http_code}" -X POST $BASE_URL/reviews/ \
+    -H "Content-Type: application/json" \
+    -d "{\"text\":\"Nice\",\"place_id\":\"$PLACE_ID\"}")
+    if [ "$REVIEW_INVALID" == "400" ]; then echo "✅ $REVIEW_INVALID"; else echo "❌ $REVIEW_INVALID"; fi
 
-# 3. Get all reviews
-echo -n "GET /reviews/: "
-ALL_REVIEWS=$(curl -s -o /dev/null -w "%{http_code}" $BASE_URL/reviews/)
-if [ "$ALL_REVIEWS" == "200" ]; then echo "✅ $ALL_REVIEWS"; else echo "❌ $ALL_REVIEWS"; fi
+    # 3. Get all reviews
+    echo -n "GET /reviews/: "
+    ALL_REVIEWS=$(curl -s -o /dev/null -w "%{http_code}" $BASE_URL/reviews/)
+    if [ "$ALL_REVIEWS" == "200" ]; then echo "✅ $ALL_REVIEWS"; else echo "❌ $ALL_REVIEWS"; fi
 
-# 4. Get single review
-echo -n "GET /reviews/<id>: "
-SINGLE_REVIEW=$(curl -s -o /dev/null -w "%{http_code}" $BASE_URL/reviews/$REVIEW_ID)
-if [ "$SINGLE_REVIEW" == "200" ]; then echo "✅ $SINGLE_REVIEW"; else echo "❌ $SINGLE_REVIEW"; fi
+    # 4. Get single review
+    if [ -n "$REVIEW_ID" ]; then
+        echo -n "GET /reviews/<id>: "
+        SINGLE_REVIEW=$(curl -s -o /dev/null -w "%{http_code}" $BASE_URL/reviews/$REVIEW_ID)
+        if [ "$SINGLE_REVIEW" == "200" ]; then echo "✅ $SINGLE_REVIEW"; else echo "❌ $SINGLE_REVIEW"; fi
+    else
+        echo "GET /reviews/<id>: ⏭️  SKIPPED (no review created)"
+    fi
+else
+    echo "Reviews tests: ⏭️  SKIPPED (no place available)"
+fi
 
 echo ""
 # -----------------------------
