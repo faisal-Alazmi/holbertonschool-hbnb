@@ -1,13 +1,14 @@
+# app/services/facade.py
 from app.persistence.repository import InMemoryRepository
 from app.models.user import User
 from app.models.amenity import Amenity
 from app.models.place import Place
 from app.models.review import Review
+from datetime import datetime
 
 
 class HBnBFacade:
     def __init__(self):
-        # Repositories
         self.user_repo = InMemoryRepository()
         self.amenity_repo = InMemoryRepository()
         self.place_repo = InMemoryRepository()
@@ -39,6 +40,8 @@ class HBnBFacade:
 
     # ================= AMENITIES =================
     def create_amenity(self, data):
+        if not data.get("name"):
+            raise ValueError("Name is required")
         amenity = Amenity(name=data.get("name"))
         self.amenity_repo.add(amenity)
         return amenity
@@ -62,11 +65,11 @@ class HBnBFacade:
         if not owner:
             raise ValueError("Owner not found")
 
-        amenities = []
-        for amenity_id in data.get("amenities", []):
-            amenity = self.amenity_repo.get(amenity_id)
-            if amenity:
-                amenities.append(amenity.id)
+        amenities = [
+            self.amenity_repo.get(a_id).id
+            for a_id in data.get("amenities", [])
+            if self.amenity_repo.get(a_id)
+        ]
 
         place = Place(
             title=data.get("title"),
@@ -77,7 +80,6 @@ class HBnBFacade:
             owner_id=owner.id,
             amenities=amenities
         )
-
         self.place_repo.add(place)
         return place
 
@@ -103,13 +105,14 @@ class HBnBFacade:
             raise ValueError("User not found")
         if not place:
             raise ValueError("Place not found")
+        if not data.get("text"):
+            raise ValueError("Text is required")
 
         review = Review(
             text=data.get("text"),
             user_id=user.id,
             place_id=place.id
         )
-
         self.review_repo.add(review)
         return review
 
