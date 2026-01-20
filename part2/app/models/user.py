@@ -2,7 +2,7 @@ from app.models.base import BaseModel
 from app.utils.auth import hash_password, verify_password
 
 class User(BaseModel):
-    def __init__(self, first_name, last_name, email, password, is_admin=False):
+    def __init__(self, first_name, last_name, email, password):
         super().__init__()
         
         # Add these validation checks
@@ -19,7 +19,6 @@ class User(BaseModel):
         self.last_name = last_name
         self.email = email
         self.password = hash_password(password)
-        self.is_admin = is_admin
         self.places = []
         self.reviews = []
     

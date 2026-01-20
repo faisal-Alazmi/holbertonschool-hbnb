@@ -37,8 +37,14 @@ class ReviewList(Resource):
         if missing:
             return {"error": f"Missing required field(s): {', '.join(missing)}"}, 400
 
+        # Validate text is not empty or just whitespace
+        text = data.get("text", "").strip()
+        if not text:
+            return {"error": "Review text cannot be empty"}, 400
+
         # Use authenticated user's ID
         data["user_id"] = current_user.id
+        data["text"] = text  # Use the stripped text
 
         # Check place exists
         if not facade.get_place(data["place_id"]):
@@ -90,11 +96,13 @@ class ReviewResource(Resource):
         if not data:
             return {"error": "No data provided"}, 400
 
-        # Only allow updating text
-        allowed_fields = ["text"]
-        update_data = {k: v for k, v in data.items() if k in allowed_fields}
-        
-        if not update_data:
+        # Only allow updating text, and validate it's not empty
+        if "text" in data:
+            text = data["text"].strip()
+            if not text:
+                return {"error": "Review text cannot be empty"}, 400
+            update_data = {"text": text}
+        else:
             return {"error": "No valid fields to update"}, 400
 
         review = facade.update_review(review_id, update_data)

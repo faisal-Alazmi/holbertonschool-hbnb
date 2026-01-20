@@ -199,7 +199,7 @@ fi
 
 # User1 tries to delete User2's review (should fail)
 echo "6. User1 trying to delete User2's review (should fail)..."
-WRONG_DELETE=$(curl -s -w "%{http_code}" -o /tmp/delete_output.txt -X DELETE $BASE_URL/reviews/$REVIEW1_ID \
+WRONG_DELETE=$(curl -s -w "%{http_code}" -o /dev/null -X DELETE $BASE_URL/reviews/$REVIEW1_ID \
   -H "Authorization: Bearer $TOKEN1")
 if [ "$WRONG_DELETE" = "403" ]; then
     echo "   ✅ Delete correctly rejected"
@@ -248,7 +248,7 @@ fi
 
 # User1 tries to update User2's profile (should fail)
 echo "2. User1 trying to update User2's profile (should fail)..."
-WRONG_PROFILE=$(curl -s -w "%{http_code}" -o /tmp/profile_output.txt -X PUT $BASE_URL/users/$USER2_ID \
+WRONG_PROFILE=$(curl -s -w "%{http_code}" -o /dev/null -X PUT $BASE_URL/users/$USER2_ID \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $TOKEN1" \
   -d '{"first_name":"Hacked","last_name":"User","email":"bob@test.com","password":"password123"}')

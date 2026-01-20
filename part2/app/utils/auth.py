@@ -22,16 +22,16 @@ def create_token(user_id):
         'exp': datetime.utcnow() + timedelta(hours=24),
         'iat': datetime.utcnow()
     }
-    secret_key = current_app.config.get('JWT_SECRET_KEY', 'your-secret-key')
-    algorithm = current_app.config.get('JWT_ALGORITHM', 'HS256')
+    secret_key = current_app.config['JWT_SECRET_KEY']
+    algorithm = current_app.config['JWT_ALGORITHM']
     return jwt.encode(payload, secret_key, algorithm=algorithm)
 
 
 def decode_token(token):
     """Decode and verify a JWT token"""
     try:
-        secret_key = current_app.config.get('JWT_SECRET_KEY', 'your-secret-key')
-        algorithm = current_app.config.get('JWT_ALGORITHM', 'HS256')
+        secret_key = current_app.config['JWT_SECRET_KEY']
+        algorithm = current_app.config['JWT_ALGORITHM']
         payload = jwt.decode(token, secret_key, algorithms=[algorithm])
         return payload
     except jwt.ExpiredSignatureError:
