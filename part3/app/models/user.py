@@ -30,6 +30,17 @@ class User(BaseModel):
         """Verifies if the provided password matches the hashed password."""
         return bcrypt.check_password_hash(self.password, password)
     
+    def update(self, data: dict):
+        """Update user attributes, handling password hashing specially."""
+        for key, value in data.items():
+            if key == 'password':
+                # Hash the password if it's being updated
+                self.hash_password(value)
+            elif hasattr(self, key):
+                setattr(self, key, value)
+        from datetime import datetime
+        self.updated_at = datetime.utcnow()
+    
     def to_dict(self):
         """Serialize user without password"""
         return {

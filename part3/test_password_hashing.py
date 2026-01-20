@@ -100,6 +100,29 @@ class TestPasswordHashing:
             # But both should verify the same password
             assert user1.verify_password("samepassword") == True
             assert user2.verify_password("samepassword") == True
+    
+    def test_password_update_is_hashed(self, app):
+        """Test that password is hashed when updated via update() method"""
+        with app.app_context():
+            user = User(
+                first_name="Update",
+                last_name="Test",
+                email="update@example.com",
+                password="oldpassword"
+            )
+            old_hash = user.password
+            
+            # Update password via update method
+            user.update({"password": "newpassword"})
+            
+            # Password should be hashed (not equal to plaintext)
+            assert user.password != "newpassword"
+            # Password should have changed
+            assert user.password != old_hash
+            # New password should verify correctly
+            assert user.verify_password("newpassword") == True
+            # Old password should not verify
+            assert user.verify_password("oldpassword") == False
 
 if __name__ == "__main__":
     # Run with pytest
