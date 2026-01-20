@@ -30,6 +30,14 @@ class HBnBFacade:
 
     def get_all_users(self):
         return self.user_repo.get_all()
+    
+    def get_user_by_email(self, email):
+        """Get user by email address"""
+        users = self.user_repo.get_all()
+        for user in users:
+            if user.email == email:
+                return user
+        return None
 
     def update_user(self, user_id, data):
         user = self.get_user(user_id)
