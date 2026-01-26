@@ -1,5 +1,6 @@
 from flask_restx import Namespace, Resource, fields
 from app.services import facade
+from app.utils.auth import jwt_required
 
 api = Namespace('places', description='Place operations')
 
@@ -23,7 +24,6 @@ place_model = api.model('Place', {
     'price': fields.Float(required=True, description='Price per night'),
     'latitude': fields.Float(required=True, description='Latitude of the place'),
     'longitude': fields.Float(required=True, description='Longitude of the place'),
-    'owner_id': fields.String(required=True, description='ID of the owner'),
     'amenities': fields.List(fields.String, required=True, description="List of amenities ID's")
 })
 
@@ -32,9 +32,13 @@ class PlaceList(Resource):
     @api.expect(place_model)
     @api.response(201, 'Place successfully created')
     @api.response(400, 'Invalid input data')
-    def post(self):
-        """Register a new place"""
+    @api.response(401, 'Unauthorized')
+    @jwt_required
+    def post(self, current_user):
+        """Register a new place (requires authentication)"""
         data = api.payload or {}
+        # Use the authenticated user as the owner
+        data['owner_id'] = current_user.id
         try:
             place = facade.create_place(data)
             return {
@@ -126,9 +130,24 @@ class PlaceResource(Resource):
     @api.response(200, 'Place updated successfully')
     @api.response(404, 'Place not found')
     @api.response(400, 'Invalid input data')
-    def put(self, place_id):
-        """Update a place's information"""
+    @api.response(401, 'Unauthorized')
+    @api.response(403, 'Forbidden - not the owner')
+    @jwt_required
+    def put(self, current_user, place_id):
+        """Update a place's information (requires authentication and ownership)"""
+        place = facade.get_place(place_id)
+        if not place:
+            return {'error': 'Place not found'}, 404
+        
+        # Check ownership
+        if place.owner_id != current_user.id:
+            return {'error': 'You do not have permission to update this place'}, 403
+        
         data = api.payload or {}
+        # Prevent changing the owner
+        if 'owner_id' in data:
+            del data['owner_id']
+        
         try:
             place = facade.update_place(place_id, data)
             if not place:
