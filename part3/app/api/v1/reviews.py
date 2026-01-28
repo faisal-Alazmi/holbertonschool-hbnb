@@ -53,7 +53,7 @@ class ReviewList(Resource):
         admin = _is_admin()
 
         if not admin and data.get("user_id") != current_user_id:
-            return {"error": "Forbidden"}, 403
+            return {"error": "Unauthorized action"}, 403
 
         # Check related entities
         if not facade.get_user(data["user_id"]):
@@ -105,7 +105,7 @@ class ReviewResource(Resource):
         admin = _is_admin()
 
         if not admin and review.user_id != current_user_id:
-            return {"error": "Forbidden"}, 403
+            return {"error": "Unauthorized action"}, 403
 
         # Validate potential changes
         if "user_id" in data and not facade.get_user(data["user_id"]):
@@ -127,7 +127,7 @@ class ReviewResource(Resource):
         admin = _is_admin()
 
         if not admin and review.user_id != current_user_id:
-            return {"error": "Forbidden"}, 403
+            return {"error": "Unauthorized action"}, 403
 
         facade.delete_review(review_id)
         return {}, 204

@@ -134,6 +134,9 @@ class HBnBFacade:
         place.update(data)
         return place
 
+    def delete_place(self, place_id):
+        self.place_repo.delete(place_id)
+
     # ================ REVIEWS ================
     def create_review(self, data):
         user = self.user_repo.get(data.get("user_id"))

@@ -1,5 +1,6 @@
+import bcrypt
+
 from app.models.base import BaseModel
-from app import bcrypt
 
 
 class User(BaseModel):
@@ -27,13 +28,17 @@ class User(BaseModel):
         """Hash the password before storing."""
         if not password:
             raise ValueError("Password is required")
-        self.password = bcrypt.generate_password_hash(password).decode("utf-8")
+        self.password = bcrypt.hashpw(
+            password.encode("utf-8"), bcrypt.gensalt()
+        ).decode("utf-8")
 
     def verify_password(self, password):
         """Verify the password."""
         if not self.password:
             return False
-        return bcrypt.check_password_hash(self.password, password)
+        return bcrypt.checkpw(
+            password.encode("utf-8"), self.password.encode("utf-8")
+        )
 
     def to_dict(self):
         """Convert to dictionary (exclude password)."""

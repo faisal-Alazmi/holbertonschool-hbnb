@@ -183,7 +183,7 @@ class PlaceResource(Resource):
         admin = _is_admin()
 
         if not admin and place.owner_id != current_user_id:
-            return {"error": "Forbidden"}, 403
+            return {"error": "Unauthorized action"}, 403
 
         try:
             updated = facade.update_place(place_id, data)
@@ -192,4 +192,20 @@ class PlaceResource(Resource):
             return {"message": "Place updated successfully"}, 200
         except ValueError as e:
             return {"error": str(e)}, 400
+
+    @jwt_required()
+    def delete(self, place_id):
+        """Delete a place (owner or admin; admins bypass ownership)."""
+        place = facade.get_place(place_id)
+        if not place:
+            return {"error": "Place not found"}, 404
+
+        current_user_id = get_jwt_identity()
+        admin = _is_admin()
+
+        if not admin and place.owner_id != current_user_id:
+            return {"error": "Unauthorized action"}, 403
+
+        facade.delete_place(place_id)
+        return {}, 204
 

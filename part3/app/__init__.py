@@ -17,6 +17,10 @@ def create_app(config_class):
     bcrypt.init_app(app)
     jwt.init_app(app)
 
+    @app.route("/")
+    def index():
+        return {"message": "API at /api/v1/", "docs": "/api/v1/"}, 200
+
     # REST API (users, amenities, places, reviews, auth)
     init_api(app)
 
