@@ -33,7 +33,6 @@ class AmenityList(Resource):
     @api.expect(amenity_input)
     @jwt_required()
     def post(self):
-        """Create a new amenity (admin only)."""
         if not _is_admin():
             return {"error": "Admin privileges required"}, 403
 
@@ -49,7 +48,6 @@ class AmenityList(Resource):
 
     @api.marshal_list_with(amenity_output)
     def get(self):
-        """List all amenities (public)."""
         amenities = facade.get_all_amenities()
         return [a.to_dict() for a in amenities], 200
 
@@ -58,7 +56,6 @@ class AmenityList(Resource):
 class AmenityResource(Resource):
     @api.marshal_with(amenity_output)
     def get(self, amenity_id):
-        """Retrieve a single amenity (public)."""
         amenity = facade.get_amenity(amenity_id)
         if not amenity:
             return {"error": "Amenity not found"}, 404
@@ -66,7 +63,6 @@ class AmenityResource(Resource):
 
     @jwt_required()
     def put(self, amenity_id):
-        """Update an amenity (admin only)."""
         if not _is_admin():
             return {"error": "Admin privileges required"}, 403
 
@@ -81,7 +77,6 @@ class AmenityResource(Resource):
 
     @jwt_required()
     def delete(self, amenity_id):
-        """Delete an amenity (admin only)."""
         if not _is_admin():
             return {"error": "Admin privileges required"}, 403
 

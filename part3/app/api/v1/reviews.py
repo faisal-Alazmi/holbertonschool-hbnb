@@ -35,11 +35,6 @@ class ReviewList(Resource):
     @api.expect(review_input)
     @jwt_required()
     def post(self):
-        """Create a new review.
-
-        - Regular users: user_id must match the authenticated user.
-        - Admins: can create reviews on behalf of any user.
-        """
         data = api.payload or {}
 
         required_fields = ["text", "user_id", "place_id"]
@@ -55,7 +50,6 @@ class ReviewList(Resource):
         if not admin and data.get("user_id") != current_user_id:
             return {"error": "Unauthorized action"}, 403
 
-        # Check related entities
         if not facade.get_user(data["user_id"]):
             return {"error": "User not found"}, 400
         if not facade.get_place(data["place_id"]):
@@ -65,7 +59,6 @@ class ReviewList(Resource):
         return serialize_review(review), 201
 
     def get(self):
-        """List all reviews (public)."""
         reviews = facade.get_all_reviews()
         return [serialize_review(r) for r in reviews], 200
 
@@ -73,7 +66,6 @@ class ReviewList(Resource):
 @api.route("/<string:review_id>")
 class ReviewResource(Resource):
     def get(self, review_id):
-        """Retrieve a single review (public)."""
         review = facade.get_review(review_id)
         if not review:
             return {"error": "Review not found"}, 404
@@ -81,11 +73,6 @@ class ReviewResource(Resource):
 
     @jwt_required()
     def put(self, review_id):
-        """Update a review.
-
-        - Owner can update own reviews.
-        - Admin can update any review (bypass ownership).
-        """
         data = api.payload or {}
         if not data:
             return {"error": "No data provided"}, 400
@@ -107,7 +94,6 @@ class ReviewResource(Resource):
         if not admin and review.user_id != current_user_id:
             return {"error": "Unauthorized action"}, 403
 
-        # Validate potential changes
         if "user_id" in data and not facade.get_user(data["user_id"]):
             return {"error": "User not found"}, 400
         if "place_id" in data and not facade.get_place(data["place_id"]):
@@ -118,7 +104,6 @@ class ReviewResource(Resource):
 
     @jwt_required()
     def delete(self, review_id):
-        """Delete a review (owner or admin)."""
         review = facade.get_review(review_id)
         if not review:
             return {"error": "Review not found"}, 404

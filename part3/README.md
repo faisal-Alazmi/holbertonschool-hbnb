@@ -4,23 +4,19 @@ REST API with JWT authentication and role-based access control (admin and regula
 
 ## Setup
 
+On Windows, use the same Python for pip and run (avoids `ModuleNotFoundError`):
+
 ```bash
 cd part3
-pip install -r requirements.txt
+py -3.12 -m pip install -r requirements.txt
+py -3.12 run.py
 ```
 
-If you see `ModuleNotFoundError: No module named 'flask'`, use the same Python for pip and run:
+Or:
 
 ```bash
 python -m pip install -r requirements.txt
 python run.py
-```
-
-On Windows, if you have multiple Python versions:
-
-```bash
-py -3.12 -m pip install -r requirements.txt
-py -3.12 run.py
 ```
 
 ## Run

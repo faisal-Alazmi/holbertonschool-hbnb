@@ -5,7 +5,6 @@ from app.services import facade
 
 api = Namespace("users", description="User operations")
 
-# Output model
 user_model = api.model(
     "User",
     {
@@ -19,7 +18,6 @@ user_model = api.model(
     },
 )
 
-# Input model
 user_input = api.model(
     "UserInput",
     {
@@ -43,7 +41,6 @@ class UserList(Resource):
     @api.marshal_with(user_model, code=201)
     @jwt_required()
     def post(self):
-        """Create a new user (admin only)."""
         if not _is_admin():
             return {"error": "Admin privileges required"}, 403
 
@@ -55,7 +52,6 @@ class UserList(Resource):
                 "error": f"Missing required field(s): {', '.join(missing)}"
             }, 400
 
-        # Ensure unique email
         if facade.get_user_by_email(data.get("email")):
             return {"error": "Email already exists"}, 400
 
@@ -69,7 +65,6 @@ class UserList(Resource):
     @api.marshal_list_with(user_model)
     @jwt_required()
     def get(self):
-        """List all users (admin only)."""
         if not _is_admin():
             return {"error": "Admin privileges required"}, 403
         users = facade.get_all_users()
@@ -81,7 +76,6 @@ class UserResource(Resource):
     @api.marshal_with(user_model)
     @jwt_required()
     def get(self, user_id):
-        """Get a user by id (self or admin)."""
         current_user_id = get_jwt_identity()
         if not _is_admin() and current_user_id != user_id:
             return {"error": "Forbidden"}, 403
@@ -95,7 +89,6 @@ class UserResource(Resource):
     @api.marshal_with(user_model)
     @jwt_required()
     def put(self, user_id):
-        """Modify a user's details (admin only)."""
         if not _is_admin():
             return {"error": "Admin privileges required"}, 403
 
@@ -105,7 +98,6 @@ class UserResource(Resource):
 
         data = api.payload or {}
 
-        # Ensure email uniqueness when changed
         if "email" in data and data.get("email"):
             existing = facade.get_user_by_email(data["email"])
             if existing and existing.id != user_id:

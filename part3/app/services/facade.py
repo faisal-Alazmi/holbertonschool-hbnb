@@ -1,29 +1,23 @@
-from datetime import datetime
-
 from app.models.amenity import Amenity
 from app.models.place import Place
 from app.models.review import Review
 from app.models.user import User
-from app.persistence.repository import InMemoryRepository
+from app.persistence.repository import InMemoryRepository, SQLAlchemyRepository
 
 
 class HBnBFacade:
-    """Facade encapsulating in-memory repositories and domain logic."""
-
     def __init__(self):
-        self.user_repo = InMemoryRepository()
+        self.user_repo = SQLAlchemyRepository(User)
         self.amenity_repo = InMemoryRepository()
         self.place_repo = InMemoryRepository()
         self.review_repo = InMemoryRepository()
 
-    # ================ USERS ================
     def get_user_by_email(self, email: str):
         if not email:
             return None
         return self.user_repo.get_by_attribute("email", email)
 
     def create_user(self, data):
-        """Create a new user with unique email and optional admin flag."""
         email = data.get("email")
         if self.get_user_by_email(email):
             raise ValueError("Email already exists")
@@ -45,12 +39,12 @@ class HBnBFacade:
         return self.user_repo.get_all()
 
     def update_user(self, user_id, data):
-        """Update user fields, handling email uniqueness and password hashing."""
+        from app import db
+
         user = self.get_user(user_id)
         if not user:
             return None
 
-        # Handle email uniqueness
         if "email" in data and data.get("email"):
             new_email = data["email"]
             existing = self.get_user_by_email(new_email)
@@ -58,11 +52,9 @@ class HBnBFacade:
                 raise ValueError("Email already exists")
             user.email = new_email
 
-        # Handle password hashing
         if "password" in data and data.get("password"):
             user.hash_password(data["password"])
 
-        # Update other attributes via BaseModel.update (e.g., first_name, last_name, is_admin)
         filtered = {
             k: v
             for k, v in data.items()
@@ -71,9 +63,9 @@ class HBnBFacade:
         if filtered:
             user.update(filtered)
 
+        db.session.commit()
         return user
 
-    # ================ AMENITIES ================
     def create_amenity(self, data):
         if not data.get("name"):
             raise ValueError("Name is required")
@@ -97,7 +89,6 @@ class HBnBFacade:
     def delete_amenity(self, amenity_id):
         self.amenity_repo.delete(amenity_id)
 
-    # ================ PLACES ================
     def create_place(self, data):
         owner = self.user_repo.get(data.get("owner_id"))
         if not owner:
@@ -137,7 +128,6 @@ class HBnBFacade:
     def delete_place(self, place_id):
         self.place_repo.delete(place_id)
 
-    # ================ REVIEWS ================
     def create_review(self, data):
         user = self.user_repo.get(data.get("user_id"))
         place = self.place_repo.get(data.get("place_id"))

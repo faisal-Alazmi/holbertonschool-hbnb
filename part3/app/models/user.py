@@ -1,13 +1,24 @@
+import uuid
+from datetime import datetime
+
 import bcrypt
 
-from app.models.base import BaseModel
+from app import db
 
 
-class User(BaseModel):
-    def __init__(self, first_name, last_name, email, password=None, is_admin=False):
-        """User model with hashed password and admin flag."""
-        super().__init__()
+class User(db.Model):
+    __tablename__ = "users"
 
+    id = db.Column(db.String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+    first_name = db.Column(db.String(128), nullable=False)
+    last_name = db.Column(db.String(128), nullable=False)
+    email = db.Column(db.String(128), unique=True, nullable=False, index=True)
+    password = db.Column(db.String(256), nullable=True)
+    is_admin = db.Column(db.Boolean, default=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    def __init__(self, first_name=None, last_name=None, email=None, password=None, is_admin=False, **kwargs):
         if not first_name:
             raise ValueError("First name is required")
         if not last_name:
@@ -15,17 +26,18 @@ class User(BaseModel):
         if not email:
             raise ValueError("Email is required")
 
-        self.first_name = first_name
-        self.last_name = last_name
-        self.email = email
+        super().__init__(
+            first_name=first_name,
+            last_name=last_name,
+            email=email,
+            is_admin=is_admin,
+            **kwargs,
+        )
         self.password = None
-        self.is_admin = is_admin
-
         if password:
             self.hash_password(password)
 
     def hash_password(self, password):
-        """Hash the password before storing."""
         if not password:
             raise ValueError("Password is required")
         self.password = bcrypt.hashpw(
@@ -33,21 +45,25 @@ class User(BaseModel):
         ).decode("utf-8")
 
     def verify_password(self, password):
-        """Verify the password."""
         if not self.password:
             return False
         return bcrypt.checkpw(
             password.encode("utf-8"), self.password.encode("utf-8")
         )
 
+    def update(self, data):
+        for key, value in data.items():
+            if hasattr(self, key):
+                setattr(self, key, value)
+        self.updated_at = datetime.utcnow()
+
     def to_dict(self):
-        """Convert to dictionary (exclude password)."""
         return {
             "id": self.id,
             "first_name": self.first_name,
             "last_name": self.last_name,
             "email": self.email,
             "is_admin": self.is_admin,
-            "created_at": self.created_at.isoformat(),
-            "updated_at": self.updated_at.isoformat(),
+            "created_at": self.created_at.isoformat() if self.created_at else None,
+            "updated_at": self.updated_at.isoformat() if self.updated_at else None,
         }

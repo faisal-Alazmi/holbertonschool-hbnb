@@ -57,20 +57,13 @@ class PlaceList(Resource):
     @api.response(400, "Invalid input data")
     @jwt_required()
     def post(self):
-        """Register a new place.
-
-        - Regular users: owner_id is forced to the authenticated user.
-        - Admins: can create places for any owner_id.
-        """
         data = api.payload or {}
         current_user_id = get_jwt_identity()
         admin = _is_admin()
 
         if not admin:
-            # Regular users can only create places they own
             data["owner_id"] = current_user_id
         else:
-            # Admins can specify an owner or default to self
             data.setdefault("owner_id", current_user_id)
 
         try:
@@ -92,7 +85,6 @@ class PlaceList(Resource):
 
     @api.response(200, "List of places retrieved successfully")
     def get(self):
-        """Retrieve a list of all places with expanded owner and amenities."""
         places = facade.get_all_places()
         result = []
         for p in places:
@@ -132,7 +124,6 @@ class PlaceResource(Resource):
     @api.response(200, "Place details retrieved successfully")
     @api.response(404, "Place not found")
     def get(self, place_id):
-        """Get place details by ID."""
         place = facade.get_place(place_id)
         if not place:
             return {"error": "Place not found"}, 404
@@ -169,11 +160,6 @@ class PlaceResource(Resource):
     @api.response(400, "Invalid input data")
     @jwt_required()
     def put(self, place_id):
-        """Update a place.
-
-        - Owner can update own places.
-        - Admin can update any place (bypass ownership).
-        """
         data = api.payload or {}
         place = facade.get_place(place_id)
         if not place:
@@ -195,7 +181,6 @@ class PlaceResource(Resource):
 
     @jwt_required()
     def delete(self, place_id):
-        """Delete a place (owner or admin; admins bypass ownership)."""
         place = facade.get_place(place_id)
         if not place:
             return {"error": "Place not found"}, 404
