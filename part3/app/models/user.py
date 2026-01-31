@@ -1,22 +1,17 @@
-import uuid
 from datetime import datetime
-
 import bcrypt
-
 from app import db
+from app.models.base import BaseModel
 
 
-class User(db.Model):
+class User(BaseModel):
     __tablename__ = "users"
 
-    id = db.Column(db.String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
     first_name = db.Column(db.String(128), nullable=False)
     last_name = db.Column(db.String(128), nullable=False)
     email = db.Column(db.String(128), unique=True, nullable=False, index=True)
     password = db.Column(db.String(256), nullable=True)
     is_admin = db.Column(db.Boolean, default=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     def __init__(self, first_name=None, last_name=None, email=None, password=None, is_admin=False, **kwargs):
         if not first_name:
