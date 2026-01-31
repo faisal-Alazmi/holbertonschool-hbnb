@@ -2,6 +2,11 @@
 
 This directory contains SQL scripts for creating and managing the HBnB database schema.
 
+**Important:** All commands should be run from within the `sql/` directory:
+```bash
+cd part3/sql
+```
+
 ## Files Overview
 
 ### 1. `schema.sql`
