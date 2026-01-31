@@ -7,6 +7,9 @@ class Amenity(BaseModel):
 
     name = db.Column(db.String(50), nullable=False)
 
+    # Relationships (defined via backref from Place model)
+    # - places: many-to-many relationship with Place (backref from Place.amenities)
+
     def __init__(self, name: str, **kwargs):
         if not name:
             raise ValueError("Amenity name is required")

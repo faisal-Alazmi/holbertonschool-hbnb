@@ -12,6 +12,10 @@ class User(BaseModel):
     password = db.Column(db.String(256), nullable=True)
     is_admin = db.Column(db.Boolean, default=False)
 
+    # Relationships (defined via backrefs from other models)
+    # - places: one-to-many relationship with Place (backref from Place.owner)
+    # - reviews: one-to-many relationship with Review (backref from Review.user)
+
     def __init__(self, first_name=None, last_name=None, email=None, password=None, is_admin=False, **kwargs):
         if not first_name:
             raise ValueError("First name is required")
