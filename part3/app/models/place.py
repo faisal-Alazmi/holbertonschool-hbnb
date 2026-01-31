@@ -55,7 +55,9 @@ class Place(BaseModel):
             owner_id=owner_id,
             **kwargs
         )
-        self.amenities = amenities or []
+        # Set amenities if provided (expects list of Amenity objects)
+        if amenities:
+            self.amenities = amenities if isinstance(amenities, list) else []
 
     def to_dict(self, owner=None, amenities=None):
         return {
