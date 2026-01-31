@@ -7,8 +7,12 @@ class Review(BaseModel):
 
     text = db.Column(db.String(500), nullable=False)
     rating = db.Column(db.Integer, nullable=False)
-    user_id = db.Column(db.String(36), nullable=False)
-    place_id = db.Column(db.String(36), nullable=False)
+    user_id = db.Column(db.String(36), db.ForeignKey('users.id'), nullable=False)
+    place_id = db.Column(db.String(36), db.ForeignKey('places.id'), nullable=False)
+
+    # Relationships
+    user = db.relationship('User', backref='reviews', lazy=True)
+    # Note: place relationship is defined in Place model with backref='place'
 
     def __init__(self, text, rating, user_id, place_id, **kwargs):
         if not text or not text.strip():
