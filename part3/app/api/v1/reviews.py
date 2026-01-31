@@ -15,6 +15,7 @@ review_input = api.model(
     "ReviewInput",
     {
         "text": fields.String(required=True),
+        "rating": fields.Integer(required=True, min=1, max=5),
         "user_id": fields.String(required=True),
         "place_id": fields.String(required=True),
     },
@@ -37,7 +38,7 @@ class ReviewList(Resource):
     def post(self):
         data = api.payload or {}
 
-        required_fields = ["text", "user_id", "place_id"]
+        required_fields = ["text", "rating", "user_id", "place_id"]
         missing = [f for f in required_fields if not data.get(f)]
         if missing:
             return {
@@ -77,7 +78,7 @@ class ReviewResource(Resource):
         if not data:
             return {"error": "No data provided"}, 400
 
-        allowed_fields = ["text", "user_id", "place_id"]
+        allowed_fields = ["text", "rating", "user_id", "place_id"]
         invalid_fields = [k for k in data if k not in allowed_fields]
         if invalid_fields:
             return {
