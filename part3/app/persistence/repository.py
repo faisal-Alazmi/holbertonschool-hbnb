@@ -110,3 +110,12 @@ class SQLAlchemyRepository(Repository):
         stmt = select(self.model).filter_by(**{attr_name: attr_value})
         return db.session.execute(stmt).scalar_one_or_none()
 
+
+class UserRepository(SQLAlchemyRepository):
+    def __init__(self):
+        from app.models.user import User
+        super().__init__(User)
+
+    def get_by_email(self, email):
+        return self.get_by_attribute("email", email)
+
