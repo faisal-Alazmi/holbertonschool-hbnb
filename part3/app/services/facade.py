@@ -13,9 +13,10 @@ class HBnBFacade:
         self.review_repo = InMemoryRepository()
 
     def get_user_by_email(self, email: str):
+        """Retrieve a user by email address."""
         if not email:
             return None
-        return self.user_repo.get_by_attribute("email", email)
+        return self.user_repo.get_user_by_email(email)
 
     def create_user(self, data):
         email = data.get("email")
