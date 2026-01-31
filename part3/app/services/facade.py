@@ -102,11 +102,12 @@ class HBnBFacade:
         if not owner:
             raise ValueError("Owner not found")
 
-        amenities = [
-            self.amenity_repo.get(a_id).id
-            for a_id in data.get("amenities", [])
-            if self.amenity_repo.get(a_id)
-        ]
+        # Get Amenity objects (not just IDs) for the relationship
+        amenity_objects = []
+        for amenity_id in data.get("amenities", []):
+            amenity = self.amenity_repo.get(amenity_id)
+            if amenity:
+                amenity_objects.append(amenity)
 
         place = Place(
             title=data.get("title"),
@@ -115,7 +116,7 @@ class HBnBFacade:
             latitude=data.get("latitude"),
             longitude=data.get("longitude"),
             owner_id=owner.id,
-            amenities=amenities,
+            amenities=amenity_objects,
         )
         self.place_repo.add(place)
         return place
@@ -131,6 +132,18 @@ class HBnBFacade:
         place = self.get_place(place_id)
         if not place:
             return None
+
+        # Handle amenities relationship separately
+        if 'amenities' in data:
+            amenity_ids = data.pop('amenities')
+            amenity_objects = []
+            for amenity_id in amenity_ids:
+                amenity = self.amenity_repo.get(amenity_id)
+                if amenity:
+                    amenity_objects.append(amenity)
+            place.amenities = amenity_objects
+
+        # Update other attributes
         place.update(data)
         db.session.commit()
         return place
