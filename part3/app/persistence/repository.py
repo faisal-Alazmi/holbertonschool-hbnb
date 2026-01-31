@@ -116,6 +116,7 @@ class UserRepository(SQLAlchemyRepository):
         from app.models.user import User
         super().__init__(User)
 
-    def get_by_email(self, email):
-        return self.get_by_attribute("email", email)
+    def get_user_by_email(self, email):
+        """Retrieve a user by email address."""
+        return self.model.query.filter_by(email=email).first()
 
