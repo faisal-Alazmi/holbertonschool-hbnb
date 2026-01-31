@@ -2,15 +2,20 @@ from app.models.amenity import Amenity
 from app.models.place import Place
 from app.models.review import Review
 from app.models.user import User
-from app.persistence.repository import InMemoryRepository, UserRepository
+from app.persistence.repository import (
+    UserRepository,
+    PlaceRepository,
+    ReviewRepository,
+    AmenityRepository
+)
 
 
 class HBnBFacade:
     def __init__(self):
         self.user_repo = UserRepository()
-        self.amenity_repo = InMemoryRepository()
-        self.place_repo = InMemoryRepository()
-        self.review_repo = InMemoryRepository()
+        self.amenity_repo = AmenityRepository()
+        self.place_repo = PlaceRepository()
+        self.review_repo = ReviewRepository()
 
     def get_user_by_email(self, email: str):
         """Retrieve a user by email address."""
@@ -81,10 +86,12 @@ class HBnBFacade:
         return self.amenity_repo.get_all()
 
     def update_amenity(self, amenity_id, data):
+        from app import db
         amenity = self.get_amenity(amenity_id)
         if not amenity:
             return None
         amenity.update(data)
+        db.session.commit()
         return amenity
 
     def delete_amenity(self, amenity_id):
@@ -120,10 +127,12 @@ class HBnBFacade:
         return self.place_repo.get_all()
 
     def update_place(self, place_id, data):
+        from app import db
         place = self.get_place(place_id)
         if not place:
             return None
         place.update(data)
+        db.session.commit()
         return place
 
     def delete_place(self, place_id):
@@ -139,9 +148,12 @@ class HBnBFacade:
             raise ValueError("Place not found")
         if not data.get("text"):
             raise ValueError("Text is required")
+        if not data.get("rating"):
+            raise ValueError("Rating is required")
 
         review = Review(
             text=data.get("text"),
+            rating=data.get("rating"),
             user_id=user.id,
             place_id=place.id,
         )
@@ -155,10 +167,12 @@ class HBnBFacade:
         return self.review_repo.get_all()
 
     def update_review(self, review_id, data):
+        from app import db
         review = self.get_review(review_id)
         if not review:
             return None
         review.update(data)
+        db.session.commit()
         return review
 
     def delete_review(self, review_id):
