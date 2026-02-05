@@ -108,6 +108,18 @@ class HBnBFacade:
         if not data.get("text"):
             raise ValueError("Text is required")
 
+        # Check if user owns the place
+        if place.owner_id == user.id:
+            raise ValueError("You cannot review your own place")
+
+        # Check if user already reviewed this place
+        existing_reviews = [
+            r for r in self.review_repo.get_all()
+            if r.user_id == user.id and r.place_id == place.id
+        ]
+        if existing_reviews:
+            raise ValueError("You have already reviewed this place")
+
         review = Review(
             text=data.get("text"),
             user_id=user.id,
@@ -137,3 +149,12 @@ class HBnBFacade:
             r for r in self.review_repo.get_all()
             if r.place_id == place_id
         ]
+
+    # ================= AUTHENTICATION =================
+    def get_user_by_email(self, email):
+        """Get user by email address"""
+        users = self.user_repo.get_all()
+        for user in users:
+            if user.email == email:
+                return user
+        return None

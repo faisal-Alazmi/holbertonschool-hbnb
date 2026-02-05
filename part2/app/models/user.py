@@ -1,4 +1,5 @@
 from app.models.base import BaseModel
+from app.utils.auth import hash_password, verify_password
 
 class User(BaseModel):
     def __init__(self, first_name, last_name, email, password):
@@ -17,9 +18,13 @@ class User(BaseModel):
         self.first_name = first_name
         self.last_name = last_name
         self.email = email
-        self.password = password
+        self.password = hash_password(password)
         self.places = []
         self.reviews = []
+    
+    def verify_password(self, password):
+        """Verify the provided password against the stored hash"""
+        return verify_password(password, self.password)
     
     def to_dict(self):
         """Serialize user without password"""
