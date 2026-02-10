@@ -305,6 +305,16 @@ nav a:hover {
     resize: vertical;
 }
 
+.form-error {
+    color: #b91c1c;
+    background-color: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: 4px;
+    padding: 10px;
+    margin-bottom: 12px;
+    font-size: 0.9rem;
+}
+
 .form-actions {
     text-align: right;
     margin-top: 10px;
