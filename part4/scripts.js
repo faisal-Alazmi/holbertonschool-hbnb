@@ -8,8 +8,98 @@ function setTokenCookie(token) {
 }
 
 function getTokenFromCookie() {
-    const match = document.cookie.match(/token=([^;]+)/);
-    return match ? match[1] : null;
+    return getCookie('token');
+}
+
+function getCookie(name) {
+    const match = document.cookie.match(new RegExp('(?:^|; )' + name.replace(/([.$?*|{}()[\]\\/+^])/g, '\\$1') + '=([^;]*)'));
+    return match ? decodeURIComponent(match[1]) : null;
+}
+
+let allPlaces = [];
+
+function checkAuthentication() {
+    const token = getCookie('token');
+    const loginLink = document.getElementById('login-link');
+    const placesList = document.getElementById('places-list');
+
+    if (!loginLink) return;
+    if (token) {
+        loginLink.style.display = 'none';
+        if (placesList) fetchPlaces(token);
+    } else {
+        loginLink.style.display = 'block';
+        if (placesList) placesList.innerHTML = '<p class="page-subtitle">Please log in to see places.</p>';
+    }
+}
+
+async function fetchPlaces(token) {
+    const headers = {};
+    if (token) headers['Authorization'] = 'Bearer ' + token;
+    const response = await fetch(`${API_BASE_URL}/api/v1/places/`, { headers });
+    const data = await response.json().catch(() => []);
+    if (response.ok && Array.isArray(data)) {
+        allPlaces = data;
+        displayPlaces(data);
+        attachPriceFilter();
+    } else {
+        const list = document.getElementById('places-list');
+        if (list) list.innerHTML = '<p class="form-error">Could not load places.</p>';
+    }
+}
+
+function displayPlaces(places) {
+    const list = document.getElementById('places-list');
+    if (!list) return;
+    list.innerHTML = '';
+    if (!places.length) {
+        list.innerHTML = '<p class="page-subtitle">No places found.</p>';
+        return;
+    }
+    places.forEach((place) => {
+        const article = document.createElement('article');
+        article.className = 'place-card';
+        article.setAttribute('data-id', place.id);
+        article.setAttribute('data-price', String(place.price != null ? place.price : ''));
+        const title = place.title || 'Unnamed place';
+        const price = place.price != null ? place.price : 0;
+        const desc = place.description || 'No description.';
+        article.innerHTML =
+            '<h2>' + escapeHtml(title) + '</h2>' +
+            '<p class="price">$' + escapeHtml(String(price)) + ' / night</p>' +
+            '<p>' + escapeHtml(desc) + '</p>' +
+            '<a href="place.html?id=' + escapeHtml(place.id) + '" class="details-button">View Details</a>';
+        list.appendChild(article);
+    });
+}
+
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+function applyPriceFilter(maxPrice) {
+    const cards = document.querySelectorAll('#places-list .place-card');
+    cards.forEach((card) => {
+        const price = parseFloat(card.getAttribute('data-price')) || 0;
+        const show = maxPrice === '' || price <= maxPrice;
+        card.style.display = show ? '' : 'none';
+    });
+}
+
+function attachPriceFilter() {
+    const filter = document.getElementById('price-filter');
+    if (!filter) return;
+    filter.removeEventListener('change', _onPriceFilterChange);
+    filter.addEventListener('change', _onPriceFilterChange);
+    _onPriceFilterChange({ target: filter });
+}
+
+function _onPriceFilterChange(event) {
+    const value = event.target.value;
+    const maxPrice = value === '' ? '' : parseFloat(value);
+    applyPriceFilter(maxPrice);
 }
 
 async function loginUser(email, password) {
@@ -39,6 +129,8 @@ async function loginUser(email, password) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+    checkAuthentication();
+
     const loginForm = document.getElementById('login-form');
     if (loginForm) {
         loginForm.addEventListener('submit', async (event) => {
