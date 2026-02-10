@@ -1,0 +1,71 @@
+<!doctype html>
+<!-- Part 4 - Simple Web Client - hbnb - List of Places -->
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Places - hbnb</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="icon.png">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header>
+    <div class="site-header">
+        <div class="logo-wrapper">
+            <img src="images/logo.png" alt="hbnb logo" class="logo">
+            <span class="site-title">hbnb</span>
+        </div>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="login.html" class="login-button">Login</a>
+        </nav>
+    </div>
+</header>
+
+<main class="main-container">
+    <h1 class="page-title">Places</h1>
+    <p class="page-subtitle">Explore places around the world.</p>
+
+    <section class="filters">
+        <div class="form-group">
+            <label for="country-filter">Filter by country</label>
+            <select id="country-filter" name="country">
+                <option value="">All countries</option>
+                <option value="us">United States</option>
+                <option value="fr">France</option>
+                <option value="es">Spain</option>
+            </select>
+        </div>
+    </section>
+
+    <section class="places-grid" id="places-list">
+        <article class="place-card" data-id="1">
+            <h2>Cozy Apartment in NYC</h2>
+            <p class="price">$120 / night</p>
+            <p>Located in the heart of Manhattan, close to everything.</p>
+            <a href="place.html?id=1" class="details-button">View Details</a>
+        </article>
+
+        <article class="place-card" data-id="2">
+            <h2>Beach House in Miami</h2>
+            <p class="price">$200 / night</p>
+            <p>Enjoy the sun and ocean views from your balcony.</p>
+            <a href="place.html?id=2" class="details-button">View Details</a>
+        </article>
+
+        <article class="place-card" data-id="3">
+            <h2>Paris Studio</h2>
+            <p class="price">€90 / night</p>
+            <p>Charming studio near the Eiffel Tower.</p>
+            <a href="place.html?id=3" class="details-button">View Details</a>
+        </article>
+    </section>
+</main>
+
+<footer>
+    <p>All rights reserved.</p>
+</footer>
+
+<script src="scripts.js"></script>
+</body>
+</html>
