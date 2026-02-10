@@ -2,5 +2,6 @@ Flask
 Flask-RESTX
 Flask-JWT-Extended
 Flask-Bcrypt
+Flask-CORS
 SQLAlchemy
 Flask-SQLAlchemy

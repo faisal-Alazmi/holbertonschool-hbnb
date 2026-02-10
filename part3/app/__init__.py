@@ -1,5 +1,6 @@
 from flask import Flask
 from flask_bcrypt import Bcrypt
+from flask_cors import CORS
 from flask_jwt_extended import JWTManager
 from flask_sqlalchemy import SQLAlchemy
 
@@ -14,6 +15,7 @@ from app.api.v1.views import api as health_blueprint
 def create_app(config_class):
     app = Flask(__name__)
     app.config.from_object(config_class)
+    CORS(app, origins=["http://127.0.0.1:5500", "http://localhost:5500", "http://127.0.0.1:8000", "http://localhost:8000"])
 
     db.init_app(app)
     bcrypt.init_app(app)
