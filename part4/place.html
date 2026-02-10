@@ -1,0 +1,81 @@
+<!doctype html>
+<!-- Part 4 - Simple Web Client - hbnb - Place Details -->
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Place Details - hbnb</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="icon.png">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header>
+    <div class="site-header">
+        <div class="logo-wrapper">
+            <img src="images/logo.png" alt="hbnb logo" class="logo">
+            <span class="site-title">hbnb</span>
+        </div>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="login.html" class="login-button">Login</a>
+        </nav>
+    </div>
+</header>
+
+<main class="main-container">
+    <section class="place-details">
+        <div class="place-images">
+            <img src="images/sample_place.jpg" alt="Sample place image">
+        </div>
+
+        <article class="place-info">
+            <h1>Cozy Apartment in NYC</h1>
+            <p class="host">Hosted by <strong>John Doe</strong></p>
+            <p class="price">$120 / night</p>
+            <p class="description">
+                A comfortable apartment located in the heart of Manhattan,
+                close to public transport, restaurants, and major attractions.
+            </p>
+
+            <h2>Amenities</h2>
+            <ul class="amenities">
+                <li>Wi-Fi</li>
+                <li>Air conditioning</li>
+                <li>Kitchen</li>
+                <li>Washer</li>
+            </ul>
+        </article>
+    </section>
+
+    <section class="reviews-section">
+        <h2>Reviews</h2>
+
+        <article class="review-card">
+            <h3>Jane Smith</h3>
+            <p class="rating">Rating: ★★★★☆ (4/5)</p>
+            <p class="comment">
+                Great location and very clean. Would definitely stay again!
+            </p>
+        </article>
+
+        <article class="review-card">
+            <h3>Michael Brown</h3>
+            <p class="rating">Rating: ★★★☆☆ (3/5)</p>
+            <p class="comment">
+                Nice place, but a bit noisy at night. Overall a good experience.
+            </p>
+        </article>
+
+        <a href="add_review.html?place_id=1" class="add-review-link">
+            Add a Review
+        </a>
+    </section>
+</main>
+
+<footer>
+    <p>All rights reserved.</p>
+</footer>
+
+<script src="scripts.js"></script>
+</body>
+</html>
