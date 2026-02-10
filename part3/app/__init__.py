@@ -33,6 +33,7 @@ def create_app(config_class):
 
     with app.app_context():
         _seed_admin_if_needed()
+        _seed_places_if_needed()
 
     return app
 
@@ -50,6 +51,53 @@ def _seed_admin_if_needed():
                 "email": "admin@example.com",
                 "password": "admin123",
                 "is_admin": True,
+            }
+        )
+    except Exception:
+        pass
+
+
+def _seed_places_if_needed():
+    from app.services import facade
+
+    if facade.get_all_places():
+        return
+    try:
+        admin = facade.get_user_by_email("admin@example.com")
+        if not admin:
+            return
+        amenity = facade.create_amenity({"name": "Wi-Fi"})
+        facade.create_place(
+            {
+                "title": "Cozy Apartment in NYC",
+                "description": "Located in the heart of Manhattan, close to everything.",
+                "price": 80,
+                "latitude": 40.7128,
+                "longitude": -74.0060,
+                "owner_id": admin.id,
+                "amenities": [amenity.id],
+            }
+        )
+        facade.create_place(
+            {
+                "title": "Beach House in Miami",
+                "description": "Enjoy the sun and ocean views from your balcony.",
+                "price": 150,
+                "latitude": 25.7617,
+                "longitude": -80.1918,
+                "owner_id": admin.id,
+                "amenities": [amenity.id],
+            }
+        )
+        facade.create_place(
+            {
+                "title": "Budget Room",
+                "description": "Simple and affordable.",
+                "price": 8,
+                "latitude": 40.7,
+                "longitude": -74.0,
+                "owner_id": admin.id,
+                "amenities": [amenity.id],
             }
         )
     except Exception:
