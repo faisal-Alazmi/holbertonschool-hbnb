@@ -25,12 +25,19 @@
 </header>
 
 <main class="main-container">
+    <!-- Place Details Section -->
     <section id="place-details" class="place-details">
         <p class="page-subtitle">Loading...</p>
     </section>
 
+    <!-- Add Review Section -->
     <section id="add-review" class="reviews-section" style="display: none;">
-        <a href="#" id="add-review-link" class="add-review-link">Add a Review</a>
+        <form id="review-form">
+            <h3>Add a Review</h3>
+            <textarea name="comment" placeholder="Write your review here..." required></textarea>
+            <input type="number" name="rating" min="1" max="5" placeholder="Rating (1-5)" required>
+            <button type="submit">Submit Review</button>
+        </form>
     </section>
 </main>
 
