@@ -17,7 +17,6 @@ class ProxyHandler(SimpleHTTPRequestHandler):
         if self.path.startswith("/api/"):
             self._proxy_request()
         else:
-            # First page = login; then after login user goes to index.html (Places)
             path_only = self.path.split("?")[0] if "?" in self.path else self.path
             if path_only.rstrip("/") == "":
                 self.path = "/login.html" + (self.path[self.path.index("?"):] if "?" in self.path else "")
