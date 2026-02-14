@@ -1,4 +1,7 @@
-/* Part 4 - Simple Web Client - hbnb - Main stylesheet */
+/* Part 4 - Simple Web Client - hbnb - Main stylesheet
+   Fixed: margin 20px, padding 10px, border 1px solid #ddd, border-radius 10px (place-card, review-card)
+   Required: header (logo, login-button), footer, nav, place-details, place-info, add-review, form
+*/
 
 * {
     box-sizing: border-box;
@@ -12,25 +15,24 @@ html {
 
 body {
     font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    background-color: #f5f7fb;
-    color: #222;
+    background-color: #f5f5f5;
+    color: #333;
     line-height: 1.5;
 }
 
-header,
-footer {
-    background-color: #ffffff;
-    border-bottom: 1px solid #e0e0e0;
+header {
+    background-color: #fff;
+    border-bottom: 1px solid #ddd;
 }
 
 footer {
-    border-top: 1px solid #e0e0e0;
-    border-bottom: none;
+    background-color: #fff;
+    border-top: 1px solid #ddd;
     text-align: center;
-    padding: 15px 0;
+    padding: 15px;
     font-size: 0.9rem;
     color: #666;
-    margin-top: 30px;
+    margin-top: 20px;
 }
 
 .main-container {
@@ -61,7 +63,7 @@ footer {
 }
 
 .site-title {
-    font-size: 1.3rem;
+    font-size: 1.25rem;
     font-weight: 600;
     color: #333;
 }
@@ -76,37 +78,54 @@ nav a {
     text-decoration: none;
     color: #333;
     font-size: 0.95rem;
-    padding: 5px 8px;
-    border-radius: 4px;
-    transition: background-color 0.2s, color 0.2s;
-}
-
-nav a:hover {
-    background-color: #4a6bff;
-    color: #fff;
 }
 
 .login-button {
-    border: 1px solid #4a6bff;
-    color: #4a6bff;
-    background-color: #fff;
+    border: 1px solid #333;
+    color: #333;
+    background: #fff;
     padding: 6px 12px;
     border-radius: 4px;
     font-size: 0.95rem;
     text-decoration: none;
-    cursor: pointer;
-    transition: background-color 0.2s, color 0.2s, border-color 0.2s;
 }
 
 .login-button:hover {
-    background-color: #4a6bff;
+    background: #333;
     color: #fff;
 }
 
+.admin-badge {
+    background: #FF5A5F;
+    color: #fff;
+    font-size: 0.75rem;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-weight: 600;
+}
+
+.form-footer {
+    margin-top: 15px;
+    font-size: 0.9rem;
+    color: #666;
+}
+.form-footer a { color: #333; font-weight: 600; }
+
+.delete-button {
+    background: #c00;
+    color: #fff;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+.delete-button:hover { background: #a00; }
+
 .page-title {
-    font-size: 1.7rem;
-    margin-bottom: 15px;
-    color: #222;
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+    color: #333;
 }
 
 .page-subtitle {
@@ -115,6 +134,7 @@ nav a:hover {
     color: #666;
 }
 
+/* Fixed Parameters: margin 20px, padding 10px, border 1px solid #ddd, border-radius 10px */
 .place-card,
 .review-card {
     margin: 20px;
@@ -127,22 +147,45 @@ nav a:hover {
 .places-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 10px;
+    gap: 20px;
+}
+
+.places-grid .place-card {
+    margin: 20px;
+    padding: 0;
+    overflow: hidden;
+}
+
+.place-card .place-card-img {
+    width: 100%;
+    height: 180px;
+    overflow: hidden;
+    background: #eee;
+}
+
+.place-card .place-card-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.place-card .place-card-body {
+    padding: 10px;
 }
 
 .place-card h2 {
-    font-size: 1.2rem;
+    font-size: 1.1rem;
     margin-bottom: 8px;
 }
 
 .place-card .price {
     font-weight: 600;
-    color: #4a6bff;
     margin-bottom: 8px;
 }
 
 .place-card p {
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     color: #555;
 }
 
@@ -150,22 +193,21 @@ nav a:hover {
     display: inline-block;
     margin-top: 10px;
     padding: 6px 12px;
-    background-color: #4a6bff;
+    background: #333;
     color: #fff;
     border-radius: 4px;
     text-decoration: none;
     font-size: 0.9rem;
-    cursor: pointer;
-    transition: background-color 0.2s;
 }
 
 .details-button:hover {
-    background-color: #354ed8;
+    background: #555;
 }
 
+/* Place details - place-details, place-info */
 .place-details {
     display: grid;
-    grid-template-columns: 2fr 1.2fr;
+    grid-template-columns: 2fr 1fr;
     gap: 20px;
     margin-bottom: 20px;
 }
@@ -173,7 +215,7 @@ nav a:hover {
 .place-images {
     border-radius: 10px;
     overflow: hidden;
-    background-color: #eaeaea;
+    background: #eee;
     min-height: 200px;
 }
 
@@ -184,48 +226,47 @@ nav a:hover {
 }
 
 .place-info {
-    background-color: #fff;
+    background: #fff;
     border-radius: 10px;
     border: 1px solid #ddd;
     padding: 15px;
 }
 
 .place-info h1 {
-    font-size: 1.6rem;
+    font-size: 1.4rem;
     margin-bottom: 10px;
 }
 
 .place-info .host {
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     color: #555;
     margin-bottom: 10px;
 }
 
 .place-info .price {
-    font-size: 1.1rem;
+    font-size: 1rem;
     font-weight: 600;
-    color: #4a6bff;
     margin-bottom: 10px;
 }
 
 .place-info .description {
     margin-bottom: 12px;
+    font-size: 0.9rem;
     color: #444;
-    font-size: 0.95rem;
 }
 
 .place-info .amenities {
     list-style: disc inside;
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     color: #444;
 }
 
 .reviews-section {
-    margin-top: 10px;
+    margin-top: 20px;
 }
 
 .reviews-section h2 {
-    font-size: 1.3rem;
+    font-size: 1.2rem;
     margin-bottom: 10px;
 }
 
@@ -236,12 +277,11 @@ nav a:hover {
 
 .review-card .rating {
     font-weight: 600;
-    color: #f59e0b;
     margin-bottom: 5px;
 }
 
 .review-card .comment {
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     color: #444;
 }
 
@@ -249,32 +289,30 @@ nav a:hover {
 .add-review-button {
     display: inline-block;
     margin-top: 10px;
-    padding: 7px 14px;
-    background-color: #22c55e;
+    padding: 8px 14px;
+    background: #333;
     color: #fff;
     border-radius: 4px;
     text-decoration: none;
     font-size: 0.9rem;
-    cursor: pointer;
-    transition: background-color 0.2s;
 }
 
-.add-review-link:hover,
-.add-review-button:hover {
-    background-color: #16a34a;
+.add-review-link:hover {
+    background: #555;
 }
 
+/* Forms */
 .form-container {
     max-width: 400px;
     margin: 20px auto;
-    padding: 15px;
+    padding: 20px;
     border-radius: 10px;
     border: 1px solid #ddd;
-    background-color: #fff;
+    background: #fff;
 }
 
 .form-title {
-    font-size: 1.4rem;
+    font-size: 1.3rem;
     margin-bottom: 15px;
     text-align: center;
 }
@@ -287,16 +325,15 @@ nav a:hover {
     display: block;
     margin-bottom: 4px;
     font-size: 0.95rem;
-    color: #333;
 }
 
 .form-group input,
 .form-group textarea,
 .form-group select {
     width: 100%;
-    padding: 7px 8px;
+    padding: 8px 10px;
     border-radius: 4px;
-    border: 1px solid #ccc;
+    border: 1px solid #ddd;
     font-size: 0.95rem;
 }
 
@@ -306,9 +343,9 @@ nav a:hover {
 }
 
 .form-error {
-    color: #b91c1c;
-    background-color: #fef2f2;
-    border: 1px solid #fecaca;
+    color: #c00;
+    background: #fee;
+    border: 1px solid #fcc;
     border-radius: 4px;
     padding: 10px;
     margin-bottom: 12px;
@@ -321,22 +358,22 @@ nav a:hover {
 }
 
 .primary-button {
-    background-color: #4a6bff;
+    background: #333;
     color: #fff;
-    padding: 7px 14px;
+    padding: 8px 16px;
     border-radius: 4px;
     border: none;
     cursor: pointer;
     font-size: 0.95rem;
-    transition: background-color 0.2s;
 }
 
 .primary-button:hover {
-    background-color: #354ed8;
+    background: #555;
 }
 
+/* add-review and form (Required classes) */
 .add-review {
-    margin-top: 10px;
+    margin-top: 20px;
 }
 
 .add-review .form {
@@ -347,6 +384,15 @@ nav a:hover {
     background-color: #fff;
 }
 
+.add-review .form-success {
+    color: #060;
+    background: #efe;
+    border: 1px solid #cfc;
+    border-radius: 4px;
+    padding: 10px;
+    margin-bottom: 12px;
+}
+
 @media (max-width: 768px) {
     .place-details {
         grid-template-columns: 1fr;
@@ -355,11 +401,5 @@ nav a:hover {
     .site-header {
         flex-direction: column;
         align-items: flex-start;
-        gap: 10px;
-    }
-
-    nav {
-        flex-wrap: wrap;
-        gap: 8px;
     }
 }

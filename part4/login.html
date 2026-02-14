@@ -4,6 +4,9 @@
 <head>
     <meta charset="utf-8">
     <title>Login - hbnb</title>
+    <script>
+        (function(){ if (document.cookie.match(/token=[^;]+/)) window.location.replace('index.html'); })();
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="icon" href="icon.png">
     <link rel="stylesheet" href="styles.css">
@@ -12,12 +15,14 @@
 <header>
     <div class="site-header">
         <div class="logo-wrapper">
-            <img src="images/logo.png" alt="hbnb logo" class="logo">
+            <img src="images/logo.png" alt="hbnb logo" class="logo" onerror="this.style.display='none'">
             <span class="site-title">hbnb</span>
         </div>
         <nav>
-            <a href="index.html">Home</a>
+            <a href="/">Home</a>
+            <span id="admin-badge" class="admin-badge" style="display: none;">Admin</span>
             <a id="login-link" href="login.html" class="login-button">Login</a>
+            <a id="logout-link" href="#" class="login-button" style="display: none;">Logout</a>
         </nav>
     </div>
 </header>
@@ -29,6 +34,7 @@
     <section class="form-container">
         <h2 class="form-title">Welcome back</h2>
         <div id="login-error" class="form-error" role="alert" aria-live="polite" style="display: none;"></div>
+        <p class="form-footer" style="margin-bottom: 12px;">Don't have an account? <a href="register.html">Create account</a></p>
         <form id="login-form">
             <div class="form-group">
                 <label for="email">Email</label>

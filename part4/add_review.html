@@ -12,12 +12,14 @@
 <header>
     <div class="site-header">
         <div class="logo-wrapper">
-            <img src="images/logo.png" alt="hbnb logo" class="logo">
+            <img src="images/logo.png" alt="hbnb logo" class="logo" onerror="this.style.display='none'">
             <span class="site-title">hbnb</span>
         </div>
         <nav>
             <a href="index.html">Home</a>
+            <span id="admin-badge" class="admin-badge" style="display: none;">Admin</span>
             <a id="login-link" href="login.html" class="login-button">Login</a>
+            <a id="logout-link" href="#" class="login-button" style="display: none;">Logout</a>
         </nav>
     </div>
 </header>
@@ -29,6 +31,7 @@
     </p>
 
     <section class="add-review">
+        <div id="add-review-message" class="form-error" role="alert" style="display: none;"></div>
         <form id="add-review-form" class="form">
             <div class="form-group">
                 <label for="place-id">Place ID</label>

@@ -97,11 +97,9 @@ class PlaceList(Resource):
                     "last_name": owner.last_name,
                     "email": owner.email,
                 }
-            amenity_items = []
-            for aid in (p.amenities or []):
-                a = facade.get_amenity(aid)
-                if a:
-                    amenity_items.append({"id": a.id, "name": a.name})
+            amenity_items = [
+                {"id": a.id, "name": a.name} for a in (p.amenities or [])
+            ]
             result.append(
                 {
                     "id": p.id,
@@ -136,11 +134,9 @@ class PlaceResource(Resource):
                 "last_name": owner.last_name,
                 "email": owner.email,
             }
-        amenity_items = []
-        for aid in (place.amenities or []):
-            a = facade.get_amenity(aid)
-            if a:
-                amenity_items.append({"id": a.id, "name": a.name})
+        amenity_items = [
+            {"id": a.id, "name": a.name} for a in (place.amenities or [])
+        ]
         return {
             "id": place.id,
             "title": place.title,

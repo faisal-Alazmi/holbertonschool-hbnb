@@ -1,0 +1,17 @@
+To run the site correctly you need two terminals:
+
+Terminal 1 – Part 3 (API):
+  cd C:\Users\BEATS\Desktop\Test\holbertonschool-hbnb\part3
+  python run.py
+  (Keep it open until you see: Running on http://127.0.0.1:5000)
+
+Terminal 2 – Part 4 (Frontend):
+  cd C:\Users\BEATS\Desktop\Test\holbertonschool-hbnb\part4
+  python server.py
+  (NOT: python -m http.server 8000)
+
+Then open the browser: http://127.0.0.1:8000/
+(Login page appears first, then after login you'll see the Places page)
+
+If you get error 404: You ran python -m http.server instead of python server.py
+If you get error 502: Part 3 is not running — run python run.py from part3 folder
